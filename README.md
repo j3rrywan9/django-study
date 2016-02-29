@@ -65,3 +65,35 @@ Now, run **migrate** again to create those model tables in your database:
 python manage.py migrate
 ```
 The **migrate** command takes all the migrations that haven't been applied (Django tracks which ones are applied using a special table in your database called **django_migration**) and runs them against your database - essentially, synchonizing the changes you made to your models with the schema in the database.
+
+## Playing with the API
+```
+python manage.py shell
+```
+We're using this instead of simply typing "python", because **manage.py** sets the **DJANGO_SETTINGS_MODULE** environment variable, which gives Django the Python import path to your **mysite/settings.py** file.
+
+## Creating an admin user
+```
+python manage.py createsuperuser
+```
+
+## Make the polls app modifiable in the admin
+We need to tell the admin that **Question** objects have an admin interface. To do this, open the **polls/admin.py** file, and edit it to look like this:
+```python
+from django.contrib import admin
+from .models import Question
+
+
+admin.site.register(Question)
+```
+
+## Customizing the admin form
+By registering the **Question** model with **admin.site.register(Question)**, Django was able to construct a default form representation. Often, you'll want to customize how the admin form looks and works. You'll do this by telling Django the options you want when you register the object.
+```python
+class QuestionAdmin(admin.ModelAdmin):
+	fields = ['pub_date', 'question_text']
+
+
+admin.site.register(Question, QuestionAdmin)
+```
+You'll follow this pattern - create a model admin class, then pass it as the second argument to **admin.site.register()** - any time you need to change the admin options for an object.
