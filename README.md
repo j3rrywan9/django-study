@@ -123,6 +123,15 @@ Being a web framework, Django needs a convenient way to generate HTML dynamicall
 
 Django ships built-in backends for its own template system, creatively called the Djang template language (DTL), and for the popluar alternative [Jinja2](http://jinja.pocoo.org/).
 
+### Configuration
+Templates engines are configured with the **TEMPLATES** setting. It's a list of configurations, one for each engine. The default value is empty.
+
+**BACKEND** is a dotted Python path to a template engine class implementing Django's template backend API. The built-in backends are **django.template.backends.django.DjangoTemplates** and **django.template.backend.jinja2.Jinja2**.
+
+**DIRS** defines a list of directories where the engine should look for template source files, in search order.
+
+**APP_DIRS** tells whether the engine should look for templates inside installed applications. Each backend defines a conventional name for the subdirectory inside applications where its templates should be stored.
+
 The **django.template.loader** module defines two functions to load templates.
 ```python
 get_template(template_name, dirs=_dirs_undefined, using=None)
@@ -137,3 +146,25 @@ Renders this template with a given context.
 If **context** is provided, it must be a **dict**. If it isn't provided, the engine will render the template with an empty context.
 
 In addition, to cut down on the repetitive nature of loading and rendering templates, Django provides a shortcut function which automates the process.
+
+### Built-in backends
+Set **BACKEND** to **django.template.backends.django.DjangoTemplates** to configure a Django template engine.
+
+**DjangoTemplates** engines accept the following **OPTIONS**:
+**context_processors**: a list of dotted Python paths to callables that are used to populate the context when a template is rendered with a request. These callables take a request object as their argument and return a **dict** of items to be merged into the context.
+
+### The Django template language
+A template is simply a text file.
+
+A template contains **variables**, which get replaced with values when the template is evaluated, and **tags**, which control the logic of the template.
+
+#### Variables
+Variables look like this: **{{ variable }}**. When the template engine encounters a variable, it evaluates that variable and replaces it with the result.
+
+Use a dot (.) to access attributes of a variable.
+
+#### Filters
+You can modify variables for display by using **filters**.
+
+#### Tags
+Django ships with about two dozen built-in template tags. You can read all about them in the [built-in tag reference](https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#ref-templates-builtins-tags).
