@@ -97,3 +97,43 @@ class QuestionAdmin(admin.ModelAdmin):
 admin.site.register(Question, QuestionAdmin)
 ```
 You'll follow this pattern - create a model admin class, then pass it as the second argument to **admin.site.register()** - any time you need to change the admin options for an object.
+
+## Write your first view
+```python
+from django.http import HttpResponse
+
+def index(response):
+	return HttpResponse("Hello, world. You're at the polls index.")
+```
+To call the view, we need to map it to a URL - and for this we need a URLconf.
+
+To create a URLconf in the polls directory, create a file called **urls.py**.
+
+The **url()** function is passed four arguments, two required: **regex** and **view**, and two optional: **kwargs**, and **name**.
+
+### url() argument: view
+When Django finds a regular expression match, Django calls the specified view function, with an **HttpRequest** object as the first argument and any "captured" values from the regular expression as other arguments. If the regex uses simple captures, values are passed as positional arguments; if it uses named captures, values are passed as keyword arguments.
+
+Whenever Django encounters **include()**, it chops off whatever part of the URL matched up to that point and sends the remaining string to the included URLconf for further processing.
+
+Each view is responsible for doing one of two things: returning an **HttpResponse** object containing the content for the requested page, or raising an exception such as **Http404**. The rest is up to you.
+
+## Templates
+Being a web framework, Django needs a convenient way to generate HTML dynamically. The most common approach relies on templates. A template contains the static parts of the desired HTML output as well as some special syntax describing how dynamic content will be inserted.
+
+Django ships built-in backends for its own template system, creatively called the Djang template language (DTL), and for the popluar alternative [Jinja2](http://jinja.pocoo.org/).
+
+The **django.template.loader** module defines two functions to load templates.
+```python
+get_template(template_name, dirs=_dirs_undefined, using=None)
+```
+This function loads the template with the given name and returns a **Template** object.
+
+```python
+Template.render(context=None, request=None)
+```
+Renders this template with a given context.
+
+If **context** is provided, it must be a **dict**. If it isn't provided, the engine will render the template with an empty context.
+
+In addition, to cut down on the repetitive nature of loading and rendering templates, Django provides a shortcut function which automates the process.
