@@ -168,3 +168,26 @@ You can modify variables for display by using **filters**.
 
 #### Tags
 Django ships with about two dozen built-in template tags. You can read all about them in the [built-in tag reference](https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#ref-templates-builtins-tags).
+
+## Logging
+### Configuring Logging
+By default, Django uses the [dictConfig format](https://docs.python.org/2/library/logging.config.html#configuration-dictionary-schema).
+
+In order to configure logging, you use **LOGGING** to define a dictionary of logging settings. These settings describe the loggers, handlers, filters and formatters that you want in your logging setup, and the log levels and other properties that you want those components to have.
+
+If the **disable_existing_loggers** key in the **LOGGING** dictConfig is set to **True** (which is the default) then all loggers from the default configuraion will be disabled.
+
+Logging is configured as part of the general Django **setup()** function. Therefore, you can be certain that loggers are always ready for use in your project code.
+
+- version
+
+- formatters
+
+- filters
+
+- handlers
+The corresponding value will be a dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance.
+
+#### django.request
+Log messages related to the handling of requests. 5XX responses are raised as **ERROR** messages; 4XX responses are raised as **WARNING** messages.
+
