@@ -1,20 +1,60 @@
 # Learning Django
 
 ## Checking Django version
+
 ```
 python -c "import django; print(django.get_version())"
 ```
 
 ## Creating a project
+
 ```
 django-admin startproject mysite
 ```
 
 ## Database setup
+
+Now, open up **mysite/settings.py**.
+It's a normal Python module with module-level variables representing Django settings.
+
+By default, the configuration uses SQLite.
+If you're new to databases, or you're just interested in trying Django, this is the easiest choice.
+SQLite is included in Python, so you won't need to install anything else to support your database.
+When starting your first real project, however, you may want to use a more scalable database like PostgreSQL, to avoid database-switching headaches down the road.
+
+If you wish to use another database, install the appropriate database bindings and change the following keys in the DATABASES 'default' item to match your database connection settings:
+
+* `ENGINE` – Either 'django.db.backends.sqlite3', 'django.db.backends.postgresql', 'django.db.backends.mysql', or 'django.db.backends.oracle'.
+Other backends are also available.
+* `NAME` – The name of your database.
+If you're using SQLite, the database will be a file on your computer;
+in that case, `NAME` should be the full absolute path, including filename, of that file.
+The default value, `os.path.join(BASE_DIR, 'db.sqlite3')`, will store the file in your project directory.
+If you are not using SQLite as your database, additional settings such as `USER`, `PASSWORD`, and `HOST` must be added.
+For more details, see the reference documentation for [**DATABASES**](https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-DATABASES).
+
+While you're editing **mysite/settings.py**, set `TIME_ZONE` to your time zone.
+
+Also, note the `INSTALLED_APPS` setting at the top of the file.
+That holds the names of all Django applications that are activated in this Django instance.
+Apps can be used in multiple projects, and you can package and distribute them for use by others in their projects.
+
+By default, `INSTALLED_APPS` contains the following apps, all of which come with Django:
+* `django.contrib.admin` – The admin site.
+* `django.contrib.auth` – An authentication system.
+* `django.contrib.contenttypes` – A framework for content types.
+* `django.contrib.sessions` – A session framework.
+* `django.contrib.messages` – A messaging framework.
+* `django.contrib.staticfiles` – A framework for managing static files.
+
+These applications are included by default as a convenience for the common case.
+
+Some of these applications make use of at least one database table, though, so we need to create the tables in the database before we can use them.
+To do that, run the following command:
 ```
 python manage.py migrate
 ```
-The **migrate** command looks at the **INSTALLED_APPS** setting and creates any necessary database tables according to the database settings in your **mysite/settings.py** file and the database migrations shipped with the app.
+The **migrate** command looks at the `INSTALLED_APPS` setting and creates any necessary database tables according to the database settings in your **mysite/settings.py** file and the database migrations shipped with the app.
 
 You can show a list of all known migrations and which are applied using
 ```
@@ -22,23 +62,28 @@ python manage.py migrate --list
 ```
 
 ## The development server
+
 ```
 python manage.py runserver
 ```
 You've started the Django development server, a lightweight Web server written purely in Python.
 
 ## Creating models
+
 Create an app called "polls":
 ```
 python manage.py startapp polls
 ```
 The first step in writing a database Web app in Django is to define your models - essentially, your database layout, with additional metadata.
 
-Each model is represented by a class that subclasses **django.db.models.Models**. Each model has a number of class variables, each of which represents a database field in the model.
+Each model is represented by a class that subclasses **django.db.models.Models**.
+Each model has a number of class variables, each of which represents a database field in the model.
 
-Each field is represented by an instance of a **Field** class. This tells Django what type of data each field holds.
+Each field is represented by an instance of a **Field** class.
+This tells Django what type of data each field holds.
 
 ## Activating models
+
 First tell the project that the **polls** app is installed.
 
 Edit the **mysite/settings.py** file again, and change the **INSTALLED_APPS** setting to include the string **'polls'**.
@@ -48,11 +93,13 @@ python manage.py makemigrations polls
 ```
 By running **makemigrations**, you're telling Django that you've made some changes to your models and that you'd like the changes to be stored as a *migration*.
 
-Migrations are how Django stores changes to your models (and thus your database schema) - they're just files on disk. You can read the migration for your new model if you like; it's the file **polls/migrations/0001_initial.py**.
+Migrations are how Django stores changes to your models (and thus your database schema) - they're just files on disk.
+You can read the migration for your new model if you like; it's the file **polls/migrations/0001_initial.py**.
 
 There's a command that you will run the migrations for you and manage your database schema automatically - that's called **migrate**.
 
-Let's see what SQL that migration would run. The **sqlmigrate** command takes migration names and returns their SQL:
+Let's see what SQL that migration would run.
+The **sqlmigrate** command takes migration names and returns their SQL:
 ```
 python manage.py sqlmigrate polls 0001
 ```
@@ -64,20 +111,24 @@ Now, run **migrate** again to create those model tables in your database:
 ```
 python manage.py migrate
 ```
-The **migrate** command takes all the migrations that haven't been applied (Django tracks which ones are applied using a special table in your database called **django_migration**) and runs them against your database - essentially, synchonizing the changes you made to your models with the schema in the database.
+The **migrate** command takes all the migrations that haven't been applied (Django tracks which ones are applied using a special table in your database called **django_migration**) and runs them against your database - essentially, synchronizing the changes you made to your models with the schema in the database.
 
 ## Playing with the API
+
 ```
 python manage.py shell
 ```
 We're using this instead of simply typing "python", because **manage.py** sets the **DJANGO_SETTINGS_MODULE** environment variable, which gives Django the Python import path to your **mysite/settings.py** file.
 
+
 ## Creating an admin user
+
 ```
 python manage.py createsuperuser
 ```
 
 ## Make the polls app modifiable in the admin
+
 We need to tell the admin that **Question** objects have an admin interface. To do this, open the **polls/admin.py** file, and edit it to look like this:
 ```python
 from django.contrib import admin
@@ -88,7 +139,10 @@ admin.site.register(Question)
 ```
 
 ## Customizing the admin form
-By registering the **Question** model with **admin.site.register(Question)**, Django was able to construct a default form representation. Often, you'll want to customize how the admin form looks and works. You'll do this by telling Django the options you want when you register the object.
+
+By registering the **Question** model with **admin.site.register(Question)**, Django was able to construct a default form representation.
+Often, you'll want to customize how the admin form looks and works.
+You'll do this by telling Django the options you want when you register the object.
 ```python
 class QuestionAdmin(admin.ModelAdmin):
 	fields = ['pub_date', 'question_text']
@@ -99,6 +153,7 @@ admin.site.register(Question, QuestionAdmin)
 You'll follow this pattern - create a model admin class, then pass it as the second argument to **admin.site.register()** - any time you need to change the admin options for an object.
 
 ## Write your first view
+
 ```python
 from django.http import HttpResponse
 
@@ -112,25 +167,34 @@ To create a URLconf in the polls directory, create a file called **urls.py**.
 The **url()** function is passed four arguments, two required: **regex** and **view**, and two optional: **kwargs**, and **name**.
 
 ### url() argument: view
-When Django finds a regular expression match, Django calls the specified view function, with an **HttpRequest** object as the first argument and any "captured" values from the regular expression as other arguments. If the regex uses simple captures, values are passed as positional arguments; if it uses named captures, values are passed as keyword arguments.
+
+When Django finds a regular expression match, Django calls the specified view function, with an **HttpRequest** object as the first argument and any "captured" values from the regular expression as other arguments.
+If the regex uses simple captures, values are passed as positional arguments; if it uses named captures, values are passed as keyword arguments.
 
 Whenever Django encounters **include()**, it chops off whatever part of the URL matched up to that point and sends the remaining string to the included URLconf for further processing.
 
 Each view is responsible for doing one of two things: returning an **HttpResponse** object containing the content for the requested page, or raising an exception such as **Http404**. The rest is up to you.
 
 ## Templates
-Being a web framework, Django needs a convenient way to generate HTML dynamically. The most common approach relies on templates. A template contains the static parts of the desired HTML output as well as some special syntax describing how dynamic content will be inserted.
+
+Being a web framework, Django needs a convenient way to generate HTML dynamically.
+The most common approach relies on templates.
+A template contains the static parts of the desired HTML output as well as some special syntax describing how dynamic content will be inserted.
 
 Django ships built-in backends for its own template system, creatively called the Djang template language (DTL), and for the popluar alternative [Jinja2](http://jinja.pocoo.org/).
 
 ### Configuration
-Templates engines are configured with the **TEMPLATES** setting. It's a list of configurations, one for each engine. The default value is empty.
 
-**BACKEND** is a dotted Python path to a template engine class implementing Django's template backend API. The built-in backends are **django.template.backends.django.DjangoTemplates** and **django.template.backend.jinja2.Jinja2**.
+Templates engines are configured with the **TEMPLATES** setting. It's a list of configurations, one for each engine.
+The default value is empty.
+
+**BACKEND** is a dotted Python path to a template engine class implementing Django's template backend API.
+The built-in backends are **django.template.backends.django.DjangoTemplates** and **django.template.backend.jinja2.Jinja2**.
 
 **DIRS** defines a list of directories where the engine should look for template source files, in search order.
 
-**APP_DIRS** tells whether the engine should look for templates inside installed applications. Each backend defines a conventional name for the subdirectory inside applications where its templates should be stored.
+**APP_DIRS** tells whether the engine should look for templates inside installed applications.
+Each backend defines a conventional name for the subdirectory inside applications where its templates should be stored.
 
 The **django.template.loader** module defines two functions to load templates.
 ```python
@@ -143,37 +207,48 @@ Template.render(context=None, request=None)
 ```
 Renders this template with a given context.
 
-If **context** is provided, it must be a **dict**. If it isn't provided, the engine will render the template with an empty context.
+If **context** is provided, it must be a **dict**.
+If it isn't provided, the engine will render the template with an empty context.
 
 In addition, to cut down on the repetitive nature of loading and rendering templates, Django provides a shortcut function which automates the process.
 
 ### Built-in backends
+
 Set **BACKEND** to **django.template.backends.django.DjangoTemplates** to configure a Django template engine.
 
 **DjangoTemplates** engines accept the following **OPTIONS**:
-**context_processors**: a list of dotted Python paths to callables that are used to populate the context when a template is rendered with a request. These callables take a request object as their argument and return a **dict** of items to be merged into the context.
+**context_processors**: a list of dotted Python paths to callables that are used to populate the context when a template is rendered with a request.
+These callables take a request object as their argument and return a **dict** of items to be merged into the context.
 
 ### The Django template language
+
 A template is simply a text file.
 
 A template contains **variables**, which get replaced with values when the template is evaluated, and **tags**, which control the logic of the template.
 
 #### Variables
+
 Variables look like this: **{{ variable }}**. When the template engine encounters a variable, it evaluates that variable and replaces it with the result.
 
 Use a dot (.) to access attributes of a variable.
 
 #### Filters
+
 You can modify variables for display by using **filters**.
 
 #### Tags
-Django ships with about two dozen built-in template tags. You can read all about them in the [built-in tag reference](https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#ref-templates-builtins-tags).
+
+Django ships with about two dozen built-in template tags.
+You can read all about them in the [built-in tag reference](https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#ref-templates-builtins-tags).
 
 ## Logging
+
 ### Configuring Logging
+
 By default, Django uses the [dictConfig format](https://docs.python.org/2/library/logging.config.html#configuration-dictionary-schema).
 
-In order to configure logging, you use **LOGGING** to define a dictionary of logging settings. These settings describe the loggers, handlers, filters and formatters that you want in your logging setup, and the log levels and other properties that you want those components to have.
+In order to configure logging, you use **LOGGING** to define a dictionary of logging settings.
+These settings describe the loggers, handlers, filters and formatters that you want in your logging setup, and the log levels and other properties that you want those components to have.
 
 If the **disable_existing_loggers** key in the **LOGGING** dictConfig is set to **True** (which is the default) then all loggers from the default configuraion will be disabled.
 
@@ -189,5 +264,7 @@ Logging is configured as part of the general Django **setup()** function. Theref
 The corresponding value will be a dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance.
 
 #### django.request
-Log messages related to the handling of requests. 5XX responses are raised as **ERROR** messages; 4XX responses are raised as **WARNING** messages.
 
+Log messages related to the handling of requests.
+5XX responses are raised as **ERROR** messages;
+4XX responses are raised as **WARNING** messages.
