@@ -1,1 +1,9 @@
-*.pyc
+# Django
+__pycache__/
+db.sqlite3
+
+# Environments
+venv/
+
+# PyCharm
+.idea/
