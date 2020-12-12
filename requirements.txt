@@ -1,2 +1,4 @@
 Django>=2.2.9,<3.0
 djangorestframework==3.9.4
+marshmallow==3.3.0
+marshmallow-enum==1.5.1
